@@ -8,13 +8,17 @@ from sqlalchemy.orm import relationship
 
 from .base import Attribute, Base
 from .util import occurrence
+
 from .util import random_boolean
 
-BASE_HP = 50
-BASE_STRENGTH = 15
-BASE_DEFENSE = 5
 HP_REGEN_AMOUNT = 10
 HP_REGEN_INTERVAL = 600  # 10 MINUTES
+
+player_base_stats = {
+    'hp': 50,
+    'strength': 15,
+    'defense': 5,
+}
 
 
 class Character(Base):
@@ -136,6 +140,16 @@ class PlayerItem(Base):
 
 
 class Player(Character):
+    __tablename__ = 'players'
+
+    def __init__(self, **kwargs):
+        super(Player, self).__init__(**kwargs)
+
+        # set Player default values
+        self.base_hp = player_base_stats['hp']
+        self.base_strength = player_base_stats['strength']
+        self.base_defense = player_base_stats['defense']
+
     user_id = Column(Integer, ForeignKey('users.id'))
     money = Column(Integer, default=0)
     hp_last_updated = Column(DateTime(timezone=True), default=func.utcnow())
@@ -193,10 +207,10 @@ class Player(Character):
     def level_up(self):
 
         # get stat to be added by getting the differences
-        gap_str = floor(BASE_STRENGTH * (self.stat_growth ** (self.level + 1))) - floor(
-            BASE_STRENGTH * (self.stat_growth ** self.level))
-        gap_def = floor(BASE_DEFENSE * (self.stat_growth ** (self.level + 1))) - floor(
-            BASE_DEFENSE * (self.stat_growth ** self.level))
+        gap_str = floor(self.base_strength * (self.stat_growth ** (self.level + 1))) - floor(
+            self.base_strength * (self.stat_growth ** self.level))
+        gap_def = floor(self.base_defense * (self.stat_growth ** (self.level + 1))) - floor(
+            self.base_defense * (self.stat_growth ** self.level))
 
         self.strength += gap_str
         self.defense += gap_def
@@ -239,23 +253,7 @@ class EquipmentSet(Base):
         return "EquipmentSet(weapon='%s', shield='%s')" % (self.weapon.name, self.shield.name)
 
 
-class Entity(Character):
-    name = Column(String(50))
-
-    __mapper_args__ = {
-        'polymorphic_identity': 'entity',
-        'polymorphic_load': 'selectin'
-    }
-
-
-class Friendly(Entity):
-    __mapper_args__ = {
-        'polymorphic_identity': 'friendly',
-        'polymorphic_load': 'inline'
-    }
-
-
-class Hostile(Entity):
+class Hostile(Character):
     # add loot reward
     loot_id = Column(Integer, ForeignKey('loots.id'))
     loot = relationship('Loot', uselist=False)

@@ -6,8 +6,21 @@ from config import BOT_TOKEN
 from db import engine
 
 
+class SimpleRPG(commands.Bot):
+    def __init__(self):
+        super().__init__(
+            command_prefix='.',
+            case_insensitive=True
+        )
+
+        # load cogs
+        for filename in os.listdir('./cogs'):
+            if filename.endswith('.py'):
+                self.load_extension(f'cogs.{filename[:-3]}')
+
+
 def main():
-    bot = commands.Bot(command_prefix='.', case_insensitive=True)
+    bot = SimpleRPG()
 
     @bot.event
     async def on_ready():
@@ -16,11 +29,6 @@ def main():
     @bot.command()
     async def ping(ctx: commands.Context):
         await ctx.send(f'Ping: `{round(bot.latency, 2)}ms`')
-
-    # load cogs
-    for filename in os.listdir('./cogs'):
-        if filename.endswith('.py'):
-            bot.load_extension(f'cogs.{filename[:-3]}')
 
     # connect to database
     engine.connect()
