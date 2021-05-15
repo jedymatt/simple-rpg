@@ -1,51 +1,48 @@
-import random
-from datetime import datetime
-from datetime import timedelta
+from math import floor
+from random import random
+
+from .error import MaxExpReachedError
 
 
-def time_left(last_updated: datetime, interval: float) -> timedelta:
-    """
+def player_next_exp(current_level):
+    base_exp = 200
+    exp_growth = 1.2
 
-    Args:
-        last_updated: last updated
-        interval: interval in seconds
-
-    Returns: remaining time
-
-    """
-    now = datetime.now(last_updated.tzinfo)
-    elapsed = now - last_updated
-    return timedelta(seconds=interval - (elapsed.total_seconds() % interval))
+    return floor(base_exp * (current_level ** exp_growth))
 
 
-def occurrence(last_updated: datetime, interval: float) -> int:
-    """
+def player_total_exp(current_level, remaining_exp=0):
+    if remaining_exp >= player_next_exp(current_level):
+        raise MaxExpReachedError
 
-    Args:
-        last_updated: last updated
-        interval: interval in seconds
+    total_exp = 0
+    level = 1
 
-    Returns: number of occurrences
+    while level <= current_level:
+        total_exp += player_next_exp(level)
+        level += 1
 
-    """
-    if interval == 0:
-        return 0
-
-    now = datetime.now(last_updated.tzinfo)
-    # now = datetime.now(timezone.utc)
-    elapsed = now - last_updated
-    return int(elapsed.total_seconds() // interval)
+    return total_exp + remaining_exp
 
 
-# TODO: add helper
-def add_exp(character, base_exp):
-    pass
+def player_level_from_total_exp(total_exp):
+    level = 1
+
+    while total_exp > player_total_exp(level):
+        level += 1
+
+    return level
 
 
-def level_up(character, base_exp):
-    pass
+def scale_stats(level, hp, strength, defense, stat_growth):
+    level -= 1
+
+    new_hp = floor(hp * (stat_growth ** level))
+    new_strength = floor(strength * (stat_growth ** level))
+    new_defense = floor(defense * (stat_growth ** level))
+
+    return [new_hp, new_strength, new_defense]
 
 
-def random_boolean(chance):
-    rand = random.random()
-    return rand <= chance
+def random_boolean(chance: float):
+    return random() <= chance

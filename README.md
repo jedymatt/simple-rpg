@@ -1,3 +1,3 @@
 # Simple RPG
 
-A text-based RPG bot in discord.
+RPG game bot in discord.

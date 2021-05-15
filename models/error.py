@@ -1,0 +1,2 @@
+class MaxExpReachedError(ValueError):
+    pass
