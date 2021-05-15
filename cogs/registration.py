@@ -2,8 +2,8 @@ from discord.ext import commands
 
 from cogs.utils import rng
 from db import session
-from models import User, Player
-from models import character
+from models import Player, Attribute
+from models import User
 
 
 # TODO: (least priority) add task to commit every 5 minutes or so, check 'confirm' method
@@ -49,12 +49,15 @@ class Register(commands.Cog):
             ctx:
         """
         user = self.users[ctx.author.id]
-        player = Player(level=1, exp=0, money=500, stat_growth=1.5)
-        player.attribute = rng.random_attribute(user.dice_roll)
-        player.attribute.current_hp += character.BASE_HP
-        player.attribute.max_hp += character.BASE_HP
-        player.attribute.strength += character.BASE_STRENGTH
-        player.attribute.defense += character.BASE_DEFENSE
+        player = Player(
+            level=1,
+            exp=0,
+            money=500,
+            stat_growth=1.4
+        )
+        player.attribute = Attribute(
+
+        )
         user.player = player
 
         session.commit()
@@ -65,12 +68,6 @@ class Register(commands.Cog):
     # async def confirm_error(self, ctx, error):
     #     if isinstance(error, commands.CheckFailure):
     #         await ctx.send("Can't confirm, please roll the die first!")
-
-    @commands.command()
-    async def rollback(self, ctx):
-        session.rollback()
-
-        await ctx.send('connection rollback')
 
 
 def setup(bot):
