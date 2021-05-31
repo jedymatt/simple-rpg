@@ -1,34 +1,26 @@
 from math import floor
 from random import random
 
-from .error import MaxExpReachedError
 
-
-def player_next_exp(current_level):
-    base_exp = 200
-    exp_growth = 1.2
-
+def player_next_exp(current_level, base_exp, exp_growth):
     return floor(base_exp * (current_level ** exp_growth))
 
 
-def player_total_exp(current_level, remaining_exp=0):
-    if remaining_exp >= player_next_exp(current_level):
-        raise MaxExpReachedError
-
+def player_total_exp(current_level, base_exp, exp_growth):
     total_exp = 0
     level = 1
 
     while level <= current_level:
-        total_exp += player_next_exp(level)
+        total_exp += player_next_exp(level, base_exp, exp_growth)
         level += 1
 
-    return total_exp + remaining_exp
+    return total_exp
 
 
-def player_level_from_total_exp(total_exp):
+def player_level_from_total_exp(total_exp, base_exp, exp_growth):
     level = 1
 
-    while total_exp > player_total_exp(level):
+    while total_exp > player_total_exp(level, base_exp, exp_growth):
         level += 1
 
     return level

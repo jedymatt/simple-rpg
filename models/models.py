@@ -24,6 +24,11 @@ class User(Base):
     # Relationships
     player = relationship('Player', back_populates='user', uselist=False)
 
+    def __repr__(self):
+        return "<User(discord_id='%s', dice_roll='%s', player_id='%s')>" % (
+            self.discord_id, self.dice_roll, self.player_id
+        )
+
 
 class Attribute(Base):
     __tablename__ = 'attributes'
@@ -42,6 +47,7 @@ class Location(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True)
+    description = Column(String(250))
     level_requirement = Column(Integer)
 
 
@@ -141,6 +147,11 @@ class Player(Character):
         'polymorphic_identity': 'player',
         'polymorphic_load': 'selectin'
     }
+
+    def __repr__(self):
+        return "<Player(level='%s', exp='%s', money='%s')>" % (
+            self.level, self.exp, self.money
+        )
 
 
 class PlayerItem(Base):

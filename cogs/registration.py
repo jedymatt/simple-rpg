@@ -1,9 +1,17 @@
+import json
+
 from discord.ext import commands
 
 from cogs.utils import rng
 from db import session
-from models import Player, Attribute
+from models import Attribute
+from models import Player
 from models import User
+
+with open('data/player.json') as _json_file:
+    _data = json.load(_json_file)
+    _player = _data['player']
+    _player_attribute = _data['attribute']
 
 
 # TODO: (least priority) add task to commit every 5 minutes or so, check 'confirm' method
@@ -13,6 +21,7 @@ class Register(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.users = {}
+        self.players = {}
 
     @commands.command()
     async def welcome(self, ctx: commands.Context):
@@ -22,11 +31,6 @@ class Register(commands.Cog):
 
     @commands.command()
     async def roll(self, ctx: commands.Context):
-        """
-
-        Args:
-            ctx:
-        """
 
         result = rng.random_dice()
 
@@ -38,36 +42,25 @@ class Register(commands.Cog):
             user = self.users[ctx.author.id]
             user.dice_roll = result
 
-        # session.commit()
         await ctx.send(str(user))
 
     @commands.command()
     async def confirm(self, ctx: commands.Context):
-        """ Finalizes the result and start to create character
-
-        Args:
-            ctx:
-        """
         user = self.users[ctx.author.id]
         player = Player(
-            level=1,
-            exp=0,
-            money=500,
-            stat_growth=1.4
+            **_player
         )
         player.attribute = Attribute(
-
+            **_player_attribute
         )
         user.player = player
-
-        session.commit()
-
+        self.players[ctx.author.id] = player
         await ctx.send(str(player))
 
-    # @confirm.error
-    # async def confirm_error(self, ctx, error):
-    #     if isinstance(error, commands.CheckFailure):
-    #         await ctx.send("Can't confirm, please roll the die first!")
+    @commands.command()
+    async def commit(self, ctx):
+        session.add(self.players[ctx.author.id])
+        session.commit()
 
 
 def setup(bot):

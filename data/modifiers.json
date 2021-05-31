@@ -1,0 +1,45 @@
+{
+    "angry": {
+        "prefix": "Angry",
+        "attribute": {
+            "max_hp": 50,
+            "strength": 15,
+            "defense": 5,
+            "critical_chance": 0,
+            "critical_damage": 0,
+            "evasion": 0
+        }
+    },
+    "agile": {
+        "prefix": "Agile",
+        "attribute": {
+            "max_hp": 50,
+            "strength": 15,
+            "defense": 5,
+            "critical_chance": 0,
+            "critical_damage": 0,
+            "evasion": 0.9
+        }
+    },
+    "lively": {
+        "prefix": "Lively",
+        "attribute": {
+            "max_hp": 50,
+            "strength": 15,
+            "defense": 5,
+            "critical_chance": 1,
+            "critical_damage": 1,
+            "evasion": 0
+        }
+    },
+    "cautious": {
+    },
+    "wild": {
+    },
+    "armored": {
+    },
+    "clever": {
+    },
+    "wealthy": {
+    }
+}

@@ -1,0 +1,74 @@
+{
+    "spider": {
+        "hostile": {
+            "name": "Spider",
+            "level": 1,
+            "exp": 0
+        },
+        "attribute": {
+            "max_hp": 30,
+            "strength": 10,
+            "defense": 5,
+            "critical_chance": 0.15,
+            "critical_damage": 0.2,
+            "evasion": 0
+        },
+        "stat_growth": 1.4,
+        "base_exp": 200,
+        "exp_growth": 1.2
+    },
+    "slime": {
+        "hostile": {
+            "name": "Slime",
+            "level": 1,
+            "exp": 0
+        },
+        "attribute": {
+            "max_hp": 55,
+            "strength": 5,
+            "defense": 5,
+            "critical_chance": 0,
+            "critical_damage": 0,
+            "evasion": 0
+        },
+        "stat_growth": 1.4,
+        "base_exp": 200,
+        "exp_growth": 1.2
+    },
+    "wolf": {
+        "hostile": {
+            "name": "Wolf",
+            "level": 1,
+            "exp": 0
+        },
+        "attribute": {
+            "max_hp": 35,
+            "strength": 13,
+            "defense": 3,
+            "critical_chance": 0.2,
+            "critical_damage": 0.4,
+            "evasion": 0.09
+        },
+        "stat_growth": 1.4,
+        "base_exp": 200,
+        "exp_growth": 1.2
+    },
+    "bear": {
+        "hostile": {
+            "name": "Bear",
+            "level": 1,
+            "exp": 0
+        },
+        "attribute": {
+            "max_hp": 65,
+            "strength": 10,
+            "defense": 15,
+            "critical_chance": 0,
+            "critical_damage": 0,
+            "evasion": 0
+        },
+        "stat_growth": 1.4,
+        "base_exp": 200,
+        "exp_growth": 1.2
+    }
+}

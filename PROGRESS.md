@@ -37,5 +37,3 @@ Breaking changes from models on Attribute, commands using Attribute class is aff
 - gather command: if no materials gathered, the monster will appear instead
 - raid: fights the weekly boss
 - dailies: claim daily rewards
-- pets
-- add crit rate and crit damage

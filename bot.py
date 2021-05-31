@@ -1,9 +1,12 @@
-import os
-
 from discord.ext import commands
 
 from config import BOT_TOKEN
 from db import engine
+
+cogs = [
+    'registration',
+    'adventure'
+]
 
 
 class SimpleRPG(commands.Bot):
@@ -14,9 +17,11 @@ class SimpleRPG(commands.Bot):
         )
 
         # load cogs
-        for filename in os.listdir('./cogs'):
-            if filename.endswith('.py'):
-                self.load_extension(f'cogs.{filename[:-3]}')
+        # for filename in os.listdir('./cogs'):
+        #     if filename.endswith('.py'):
+        #         self.load_extension(f'cogs.{filename[:-3]}')
+        for cog in cogs:
+            self.load_extension(f'cogs.{cog}')
 
 
 def main():
