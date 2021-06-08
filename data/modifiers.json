@@ -1,45 +1,44 @@
-{
-    "angry": {
+[
+    {
         "prefix": "Angry",
         "attribute": {
-            "max_hp": 50,
-            "strength": 15,
-            "defense": 5,
-            "critical_chance": 0,
-            "critical_damage": 0,
-            "evasion": 0
-        }
+            "strength": 12
+        },
+        "bonus_exp": 0.12,
+        "bonus_money": 0.14
     },
-    "agile": {
-        "prefix": "Agile",
+    {
+        "prefix": "Chunky",
         "attribute": {
-            "max_hp": 50,
-            "strength": 15,
-            "defense": 5,
-            "critical_chance": 0,
-            "critical_damage": 0,
-            "evasion": 0.9
-        }
+            "max_hp": 12
+        },
+        "bonus_exp": 0.10,
+        "bonus_money": 0.25
     },
-    "lively": {
-        "prefix": "Lively",
+    {
+        "prefix": "Cautious",
         "attribute": {
-            "max_hp": 50,
-            "strength": 15,
-            "defense": 5,
-            "critical_chance": 1,
-            "critical_damage": 1,
-            "evasion": 0
-        }
+            "evade_chance": 0.10
+        },
+        "bonus_exp": 0.17,
+        "bonus_money": 0.15
     },
-    "cautious": {
+    {
+        "prefix": "Wild",
+        "attribute": {
+            "critical_chance": 0.10,
+            "critical_damage": 0.25
+        },
+        "bonus_exp": 0.25,
+        "bonus_money": 0.10
     },
-    "wild": {
-    },
-    "armored": {
-    },
-    "clever": {
-    },
-    "wealthy": {
+    {
+        "prefix": "Armoured",
+        "attribute": {
+            "max_hp": 2,
+            "defense": 12
+        },
+        "bonus_exp": 0.15,
+        "bonus_money": 0.17
     }
-}
+]

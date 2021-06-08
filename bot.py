@@ -4,7 +4,7 @@ from config import BOT_TOKEN
 from db import engine
 
 cogs = [
-    'registration',
+    'register',
     'adventure'
 ]
 

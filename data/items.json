@@ -1,0 +1,50 @@
+[
+    {
+        "name": "Spider Web",
+        "description": "",
+        "is_tradable": false,
+        "type": "raw"
+    },
+    {
+        "name": "Slime Secrete",
+        "description": "",
+        "is_tradable": false,
+        "type": "raw"
+    },
+    {
+        "name": "Wolf Fang",
+        "description": "",
+        "is_tradable": false,
+        "type": "raw"
+    },
+    {
+        "name": "Bear Skin",
+        "description": "",
+        "is_tradable": false,
+        "type": "raw"
+    },
+    {
+        "name": "Stone",
+        "description": "",
+        "is_tradable": false,
+        "type": "raw"
+    },
+    {
+        "name": "Wood",
+        "description": "",
+        "is_tradable": false,
+        "type": "raw"
+    },
+    {
+        "name": "Iron",
+        "description": "",
+        "is_tradable": false,
+        "type": "raw"
+    },
+    {
+        "name": "Gold",
+        "description": "",
+        "is_tradable": false,
+        "type": "raw"
+    }
+]

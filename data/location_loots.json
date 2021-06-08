@@ -1,0 +1,55 @@
+[
+    {
+        "location": "Hometown",
+        "min": 1,
+        "max": 2,
+        "loot": {
+            "exp": 0,
+            "money": 1,
+            "item_loots": [
+                {
+                    "item": "Wood",
+                    "drop_chance": 1
+                }
+            ]
+        }
+    },
+    {
+        "location": "Northern Plain",
+        "min": 1,
+        "max": 2,
+        "loot": {
+            "exp": 0,
+            "money": 3,
+            "item_loots": [
+                {
+                    "item": "Wood",
+                    "drop_chance": 1
+                },
+                {
+                    "item": "Stone",
+                    "drop_chance": 0.5
+                }
+            ]
+        }
+    },
+    {
+        "location": "Rocky Mountain",
+        "min": 1,
+        "max": 2,
+        "loot": {
+            "exp": 0,
+            "money": 9,
+            "item_loots": [
+                {
+                    "item": "Stone",
+                    "drop_chance": 1
+                },
+                {
+                    "item": "Iron",
+                    "drop_chance": 0.5
+                }
+            ]
+        }
+    }
+]

@@ -16,7 +16,6 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
     discord_id = Column(BigInteger, unique=True, nullable=False)
-    dice_roll = Column(Integer)
 
     # Foreign keys
     player_id = Column(Integer, ForeignKey('players.id'))
@@ -25,8 +24,8 @@ class User(Base):
     player = relationship('Player', back_populates='user', uselist=False)
 
     def __repr__(self):
-        return "<User(discord_id='%s', dice_roll='%s', player_id='%s')>" % (
-            self.discord_id, self.dice_roll, self.player_id
+        return "<User(discord_id='%s', player_id='%s')>" % (
+            self.discord_id, self.player_id
         )
 
 
@@ -34,12 +33,21 @@ class Attribute(Base):
     __tablename__ = 'attributes'
 
     id = Column(Integer, primary_key=True)
-    max_hp = Column(Integer)
-    strength = Column(Integer)
-    defense = Column(Integer)
-    critical_chance = Column(Float, default=1)
-    critical_damage = Column(Float, default=1)
-    evasion = Column(Float, default=1)
+    max_hp = Column(Integer, default=0)
+    strength = Column(Integer, default=0)
+    defense = Column(Integer, default=0)
+    critical_chance = Column(Float, default=0)
+    critical_damage = Column(Float, default=0)
+    evade_chance = Column(Float, default=0)
+    escape_chance = Column(Float, default=0)
+    growth = Column(Float, default=0)
+
+    def __repr__(self):
+        return "<Attribute(max_hp='%s', strength='%s', defense='%s', critical_chance='%s', critical_damage='%s', " \
+               "evade_chance='%s', growth='%s')>" % (
+                   self.max_hp, self.strength, self.defense, self.critical_chance, self.critical_damage,
+                   self.evade_chance, self.growth
+               )
 
 
 class Location(Base):
@@ -49,6 +57,11 @@ class Location(Base):
     name = Column(String(50), unique=True)
     description = Column(String(250))
     level_requirement = Column(Integer)
+
+    def __repr__(self):
+        return "<Location(name='%s', description='%s', level_requirement='%s')>" % (
+            self.name, self.description, self.level_requirement
+        )
 
 
 class Item(Base):
@@ -71,6 +84,11 @@ class Item(Base):
         'polymorphic_on': type
     }
 
+    def __repr__(self):
+        return "<Item(name='%s', description='%s', is_tradable='%s', type='%s')>" % (
+            self.name, self.description, self.is_tradable, self.type
+        )
+
 
 class Consumable(Item):
     __mapper_args__ = {
@@ -84,6 +102,9 @@ class Raw(Item):
         'polymorphic_identity': 'raw',
         'polymorphic_load': 'selectin'
     }
+
+    def __repr__(self):
+        return super().__repr__()
 
 
 class Equipment(Item):
@@ -100,9 +121,9 @@ class Weapon(Equipment):
     }
 
 
-class Shield(Equipment):
+class Armour(Equipment):
     __mapper_args__ = {
-        'polymorphic_identity': 'shield',
+        'polymorphic_identity': 'armour',
         'polymorphic_load': 'inline'
     }
 
@@ -127,6 +148,11 @@ class Character(Base):
         'polymorphic_identity': 'character',
         'polymorphic_on': type
     }
+
+    def __repr__(self):
+        return "<Character(level='%s', exp='%s', type='%s')>" % (
+            self.level, self.exp, self.type
+        )
 
 
 class Player(Character):
@@ -172,11 +198,11 @@ class EquipmentSet(Base):
 
     # Foreign Keys
     weapon_id = Column(Integer, ForeignKey('items.id'))
-    shield_id = Column(Integer, ForeignKey('items.id'))
+    armour_id = Column(Integer, ForeignKey('items.id'))
 
     # Relationships
     weapon = relationship('Weapon', foreign_keys=[weapon_id], uselist=False)
-    shield = relationship('Shield', foreign_keys=[shield_id], uselist=False)
+    armour = relationship('Armour', foreign_keys=[armour_id], uselist=False)
 
 
 class Hostile(Character):
@@ -186,15 +212,35 @@ class Hostile(Character):
     name = Column(String(50), unique=True)
 
     # Foreign keys
-    drop_loot_id = Column(Integer, ForeignKey('loots.id'))
+    loot_id = Column(Integer, ForeignKey('loots.id'))
 
     # Relationships
-    drop_loot = relationship('Loot', uselist=False)
+    loot = relationship('Loot', uselist=False)
 
     __mapper_args__ = {
         'polymorphic_identity': 'hostile',
         'polymorphic_load': 'selectin'
     }
+
+    def __repr__(self):
+        return "<Hostile(name='%s', level='%s'>" % (
+            self.name, self.level
+        )
+
+
+class Modifier(Base):
+    __tablename__ = 'modifiers'
+
+    id = Column(Integer, primary_key=True)
+    prefix = Column(String(10), unique=True)
+    bonus_exp = Column(Float)
+    bonus_money = Column(Float)
+
+    # Foreign keys
+    attribute_id = Column(Integer, ForeignKey('attributes.id'))
+
+    # relationships
+    attribute = relationship('Attribute', uselist=False)
 
 
 class Loot(Base):
@@ -212,8 +258,6 @@ class ItemLoot(Base):
     __tablename__ = 'item_loots'
 
     id = Column(Integer, primary_key=True)
-    min = Column(Integer)
-    max = Column(Integer)
     drop_chance = Column(Float)
 
     # Foreign Keys
@@ -228,6 +272,8 @@ class LocationLoot(Base):
     __tablename__ = 'location_loots'
 
     id = Column(Integer, primary_key=True)
+    min = Column(Integer)
+    max = Column(Integer)
 
     # foreign keys
     location_id = Column(Integer, ForeignKey('locations.id'))

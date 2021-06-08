@@ -1,3 +1,4 @@
+from .models import Armour
 from .models import Attribute
 from .models import Blueprint
 from .models import BlueprintMaterial
@@ -11,10 +12,10 @@ from .models import ItemLoot
 from .models import Location
 from .models import LocationLoot
 from .models import Loot
+from .models import Modifier
 from .models import Player
 from .models import PlayerItem
 from .models import Raw
-from .models import Shield
 from .models import Shop
 from .models import User
 from .models import Weapon

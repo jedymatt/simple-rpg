@@ -1,18 +1,12 @@
 {
-    "player": {
-        "level": 1,
-        "exp": 0,
-        "money": 500
-    },
+    "level": 1,
+    "exp": 0,
+    "money": 500,
     "attribute": {
         "max_hp": 50,
         "strength": 15,
         "defense": 5,
-        "critical_chance": 0,
-        "critical_damage": 0,
-        "evasion": 0
+        "growth": 1.4
     },
-    "stat_growth": 1.4,
-    "base_exp": 200,
-    "exp_growth": 1.2
+    "location": "Hometown"
 }
