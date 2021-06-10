@@ -5,7 +5,7 @@ from discord.ext import commands
 
 from cogs.utils.errors import ItemNotFound
 from cogs.utils.stripper import strip_name_amount
-from db import session
+from db.connector import session
 from models import Attribute
 from models import ItemPlan, Equipment, ShopItem, PlayerItem, Player, User, Consumable, Weapon, Shield, EquipmentSet
 

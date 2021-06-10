@@ -9,18 +9,19 @@ from discord import Embed
 from discord.ext import commands
 from sqlalchemy.sql import func
 
-from db import session
-from models import Hostile
-from models import Modifier
-from models import Loot
+from cogs.utils.character import combine_attributes, scale_loot, gain_exp
+from db.connector import session
+from models import Hostile, Loot
 from models import Location
+from models import Modifier
 from models import Player
 from models import PlayerItem
 from models import User
 from models import util
+from models.util import character_scale_attribute
 
 
-class Exploration(commands.Cog):
+class Explore(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
@@ -66,7 +67,6 @@ class Exploration(commands.Cog):
 
         enemy = Hostile(level=enemy_level, exp=0)
 
-        loot_growth = 1.4
         enemy.loot = Loot(
             exp=chosen_hostile.loot.exp,
             money=chosen_hostile.loot.money
@@ -77,21 +77,21 @@ class Exploration(commands.Cog):
             modifiers = session.query(Modifier).all()
             chosen_modifier: Modifier = random.choice(modifiers)
             enemy.name = "{} {}".format(chosen_modifier.prefix, chosen_hostile.name)
-            enemy.attribute = util.combine_attributes(chosen_hostile.attribute, chosen_modifier.attribute)
+            enemy.attribute = combine_attributes(chosen_hostile.attribute, chosen_modifier.attribute)
             enemy.loot.exp = ceil(enemy.loot.exp * (1 + chosen_modifier.bonus_exp))
             enemy.loot.money = ceil(enemy.loot.money * (1 + chosen_modifier.bonus_money))
         else:
             enemy.name = chosen_hostile.name
             enemy.attribute = copy.copy(chosen_hostile.attribute)
 
-        # scaling attribute to match the level
-        util.scale_attribute(enemy.level, enemy.attribute)
+        # scale attribute to match the level
+        character_scale_attribute(enemy.level, enemy.attribute)
+        # scale loot
+        scale_loot(enemy.level, enemy.loot)
 
-        print(player)
-        print(player.attribute)
+        print(player, end=f"\n{player.attribute}")
         print('vs.')
-        print(enemy)
-        print(enemy.attribute)
+        print(enemy, end=f"\n{enemy.attribute}")
 
         # Battle simulation
         # first attacker is Player
@@ -110,16 +110,27 @@ class Exploration(commands.Cog):
                 player_hp -= damage_dealt[0]
                 player_turn = True
 
-            print('{}: {}{}'.format(ctx.author.name if not player_turn else enemy.name,
-                                    "Crit " if damage_dealt[1] else "",
-                                    damage_dealt[0]))
+            # print('{}: {}{}'.format(ctx.author.name if not player_turn else enemy.name,
+            #                         "Crit " if damage_dealt[1] else "",
+            #                         damage_dealt[0]))
+        # end simulation
 
         print("Player HP: {}, Enemy HP: {}".format(player_hp, enemy_hp))
         print('{} won.'.format(ctx.author.name if player_hp > 0 else enemy.name))
+        # if player won
         if player_hp > 0:
             print('rewards')
             print('exp:', enemy.loot.exp)
             print('money:', enemy.loot.money)
+            player.money += enemy.loot.money
+            player.exp += enemy.loot.exp
+            # todo: add code here to check if the player exp reached the amount of exp required
+            #  to level up
+
+            # randomly generate a chance to receive drop item
+            for item_loot in chosen_hostile.loot.item_loots:
+                # todo: add code or create and call the function here to add player item
+                pass
 
     @commands.command(aliases=['places', 'areas'])
     async def locations(self, ctx):
@@ -133,7 +144,8 @@ class Exploration(commands.Cog):
         for location in locations:
             embed.add_field(
                 name=location.name,
-                value=location.description if location.description else '*No description yet*'
+                value=location.description if location.description else '*No description yet*',
+                inline=False
             )
 
         await ctx.send(embed=embed)
@@ -205,4 +217,4 @@ class Exploration(commands.Cog):
 
 
 def setup(bot: commands.Bot):
-    bot.add_cog(Exploration(bot))
+    bot.add_cog(Explore(bot))

@@ -1,6 +1,10 @@
 from discord.ext import commands
 
 
+class MaximumExpError(ValueError):
+    pass
+
+
 class NoDieRoll(commands.CheckFailure):
     pass
 

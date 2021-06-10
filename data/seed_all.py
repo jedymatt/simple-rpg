@@ -1,4 +1,4 @@
-from db import session
+from db.connector import session
 from seed_hostiles import load_hostiles
 from seed_items import load_items
 from seed_location_loots import load_location_loots

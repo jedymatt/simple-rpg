@@ -4,7 +4,7 @@ from sqlalchemy.sql import func
 
 import models as model
 from cogs.utils import stripper
-from db import session
+from db.connector import session
 
 
 class Economy(commands.Cog):

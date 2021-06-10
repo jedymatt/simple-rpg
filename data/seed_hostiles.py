@@ -1,6 +1,6 @@
 import json
 
-from db import session
+from db.connector import session
 from models import Attribute, ItemLoot, Loot, Raw
 from models import Hostile
 from models import Location

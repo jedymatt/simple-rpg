@@ -1,15 +1,11 @@
-import json
-
 from discord.ext import commands
 
-from db import session
+from db.connector import session
 from models import Attribute
 from models import Location
 from models import Player
 from models import User
-
-with open('data/player.json') as _json_file:
-    player_data = json.load(_json_file)
+from cogs.utils.character import PLAYER_DATA
 
 
 class Register(commands.Cog):
@@ -24,13 +20,13 @@ class Register(commands.Cog):
         )
         Player(
             user=user,
-            level=player_data['level'],
-            exp=player_data['exp'],
-            money=player_data['money'],
+            level=PLAYER_DATA['level'],
+            exp=PLAYER_DATA['exp'],
+            money=PLAYER_DATA['money'],
             attribute=Attribute(
-                **player_data['attribute']
+                **PLAYER_DATA['attribute']
             ),
-            location=session.query(Location).filter(Location.name == player_data['location']).one()
+            location=session.query(Location).filter(Location.name == PLAYER_DATA['location']).one()
         )
 
         session.add(user)

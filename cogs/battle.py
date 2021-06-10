@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-from db import session
+from db.connector import session
 from models import Player
 from models import User
 

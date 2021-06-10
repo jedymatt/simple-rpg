@@ -1,11 +1,12 @@
 from discord.ext import commands
 
 from config import BOT_TOKEN
-from db import engine
+from db.connector import engine
 
 cogs = [
     'register',
-    'adventure'
+    'explore',
+    'information'
 ]
 
 

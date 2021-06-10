@@ -1,6 +1,5 @@
 import json
 
-from db import session
 from models import Attribute
 from models import Modifier
 

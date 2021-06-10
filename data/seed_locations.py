@@ -1,7 +1,6 @@
 import json
 
 from models import Location
-from db import session
 
 
 def load_locations():

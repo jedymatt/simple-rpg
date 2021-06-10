@@ -1,6 +1,6 @@
 from discord.ext import commands
 
-from db import session
+from db.connector import session
 
 
 # def query_player(user_id):

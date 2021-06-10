@@ -1,6 +1,6 @@
 import json
 
-from db import session
+from db.connector import session
 from models import Item
 from models import ItemLoot
 from models import Location
