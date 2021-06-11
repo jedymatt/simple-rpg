@@ -190,6 +190,11 @@ class PlayerItem(Base):
 
     item = relationship('Item', uselist=False)
 
+    def __repr__(self):
+        return "<PlayerItem(amount='%s')>" % (
+            self.amount
+        )
+
 
 class EquipmentSet(Base):
     __tablename__ = 'equipment_sets'
@@ -253,6 +258,11 @@ class Loot(Base):
     # relationships
     item_loots = relationship('ItemLoot')
 
+    def __repr__(self):
+        return "<Loot(exp='%s', money='%s')>" % (
+            self.exp, self.money
+        )
+
 
 class ItemLoot(Base):
     __tablename__ = 'item_loots'
@@ -266,6 +276,11 @@ class ItemLoot(Base):
 
     # Relationships
     item = relationship('Item', uselist=False)
+
+    def __repr__(self):
+        return "<ItemLoot(drop_chance='%s')>" % (
+            self.drop_chance
+        )
 
 
 class LocationLoot(Base):

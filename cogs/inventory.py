@@ -7,22 +7,22 @@ from cogs.utils.errors import ItemNotFound
 from cogs.utils.stripper import strip_name_amount
 from db.connector import session
 from models import Attribute
-from models import ItemPlan, Equipment, ShopItem, PlayerItem, Player, User, Consumable, Weapon, Shield, EquipmentSet
+from models import Equipment, PlayerItem, Player, User, Consumable, Weapon, EquipmentSet
 
 
-class ItemCommand(commands.Cog, name='Manage Items'):
+class Inventory(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.item_plans = session.query(ItemPlan).all()
-        self.shop_items = session.query(ShopItem).all()
 
     @commands.command()
     async def items(self, ctx):
         """Show list of items"""
         author_id = ctx.author.id
 
-        player = session.query(Player).filter(User.discord_id == author_id).one()
+        player = session.query(Player).join(User).filter(
+            User.discord_id == author_id
+        ).one()
 
         embed = discord.Embed(
             title='Owned Items',
@@ -276,4 +276,4 @@ class ItemCommand(commands.Cog, name='Manage Items'):
 
 
 def setup(bot):
-    bot.add_cog(ItemCommand(bot))
+    bot.add_cog(Inventory(bot))

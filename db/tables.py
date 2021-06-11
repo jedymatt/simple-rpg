@@ -1,4 +1,4 @@
-from connector import engine
+from db.connector import engine
 from models.models import Base
 
 

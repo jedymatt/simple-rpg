@@ -5,8 +5,9 @@ from db.connector import engine
 
 cogs = [
     'register',
-    'explore',
-    'information'
+    'adventure',
+    'information',
+    'inventory'
 ]
 
 
