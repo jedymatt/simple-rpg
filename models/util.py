@@ -48,6 +48,3 @@ def calculate_damage(attacker: Attribute, receiver: Attribute):
         damage_taken *= (1 + attacker.critical_damage)
 
     return ceil(damage_taken), is_critical_hit
-
-
-

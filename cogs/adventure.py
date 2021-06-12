@@ -2,14 +2,16 @@ import random
 from datetime import datetime
 from random import randint
 
+import discord
 from discord import Colour
 from discord import Embed
-from discord.ext import commands
+from discord.ext import commands, menus
 from sqlalchemy.orm import make_transient
 from sqlalchemy.sql import func
 
 from cogs.utils.character import add_player_item, BattleSimulator
-from cogs.utils.character import adjust_hostile_by_level
+from cogs.utils.character import create_hostile_enemy
+from cogs.utils.paginator import ListPage, character_hunt_record, EmbedPages
 from db.connector import session as db_session
 from models import Hostile
 from models import Location
@@ -45,7 +47,7 @@ class Adventure(commands.Cog):
         await ctx.send('success')
 
     @commands.command()
-    async def hunt(self, ctx):
+    async def hunt(self, ctx: commands.Context):
         """Explore the surrounding"""
         player = db_session.query(Player).join(User).filter(
             User.discord_id == ctx.author.id
@@ -80,7 +82,7 @@ class Adventure(commands.Cog):
         db_session.enable_relationship_loading(random_hostile.loot)
 
         enemy = random_hostile
-        adjust_hostile_by_level(random_enemy_level, enemy, random_modifier)
+        create_hostile_enemy(random_enemy_level, enemy, random_modifier)
         # Battle simulation
         # first attacker is Player
         battle = BattleSimulator(player, enemy)
@@ -90,63 +92,67 @@ class Adventure(commands.Cog):
         player_record = battle.character_record
         enemy_record = battle.opponent_record
 
-        # embed
-        embed = Embed(
-            title='Hunt Info',
-        )
-
-        embed.add_field(
-            name=f"{ctx.author.display_name} Lvl.{player.level}",
-            value="HP: {} / {}\nAve. Dmg/hit: {}\nHighest Dmg: {}{}\nCrit Hit(s): {}\nEvaded Hit(s): {}\n"
-                  "Lowest Damage Received: {}".format(player_record.current_hp if player_record.current_hp > 0 else 0,
-                                                      player.attribute.max_hp,
-                                                      round(player_record.total_damage_dealt / player_record.total_hits,
-                                                            1),
-                                                      'Crit ' if player_record.highest_damage_is_crit else '',
-                                                      player_record.highest_damage,
-                                                      player_record.crit_hits,
-                                                      player_record.evaded_hits,
-                                                      player_record.lowest_damage_received),
-            # inline=False
-        )
-
-        embed.add_field(
-            name=f"{enemy.name} Lvl.{enemy.level}",
-            value="HP: {} / {}\nAve. Dmg/hit: {}\nHighest Dmg: {}{}\nCrit Hit(s): {}\nEvaded Hit(s): {}\n"
-                  "Lowest Damage Received: {}".format(enemy_record.current_hp if enemy_record.current_hp > 0 else 0,
-                                                      enemy.attribute.max_hp,
-                                                      round(enemy_record.total_damage_dealt / enemy_record.total_hits,
-                                                            1),
-                                                      'Crit ' if enemy_record.highest_damage_is_crit else '',
-                                                      enemy_record.highest_damage,
-                                                      enemy_record.crit_hits,
-                                                      enemy_record.evaded_hits,
-                                                      enemy_record.lowest_damage_received),
-            inline=False
+        str_msg = None
+        result_embed = Embed(
+            title='Hunt Result:',
+            colour=discord.Colour.gold()
         )
 
         if winner is player:
+            str_msg = 'You defeated the enemy!'
+            result_embed.add_field(
+                name='Rewards',
+                value="Money: +{}\nExp: +{}".format(
+                    enemy.loot.money, enemy.loot.exp
+                ),
+                inline=False
+            )
 
+            # reward exp and gold
+            player.exp += enemy.loot.exp
+            player.money += enemy.loot.money
+
+            has_received_item_reward = False
             # randomly generate a chance to receive drop item
             for item_loot in enemy.loot.item_loots:
                 if random_boolean(item_loot.drop_chance):
                     add_player_item(player, item_loot.item, 1)
+                    has_received_item_reward = True
 
-            await ctx.send('You won.', embed=embed)
+            if has_received_item_reward:
+                result_embed.add_field(
+                    name='Items',
+                    value="\n".join(f"{item_loot.item.name} +{1}" for item_loot in enemy.loot.item_loots)
+                )
+
         elif winner is enemy:
-            await ctx.send('Defeat', embed=embed)
+            str_msg = 'You fainted!'
         else:
             if battle.character_record.has_escaped:
-                await ctx.send('You escaped', embed=embed)
+                str_msg = 'You escaped!'
             elif battle.opponent_record.has_escaped:
-                await ctx.send('Enemy escaped', embed=embed)
+                str_msg = 'Enemy escaped!'
 
-        print(random_hostile)
-        print(random_hostile.attribute)
-        print(random_hostile.loot)
-        print('------------------------------')
-        print('Session.dirty =', db_session.dirty)
-        print('Session.new =', db_session.new)
+        result_embed.title += f"\n{str_msg}"
+
+        entries = [
+            result_embed,
+            character_hunt_record('Battle Info', ctx.author.display_name, player, player_record),
+            character_hunt_record('Battle Info', enemy.name, enemy, enemy_record)
+        ]
+
+        # pages = menus.MenuPages(source=ListPage(entries),
+        #                         clear_reactions_after=True)
+        #
+        # await ctx.send(content=str_msg)
+        # await pages.start(ctx)
+        # await ctx.send(content=str_msg, embed=entries[1])
+        pages = EmbedPages(
+            msg=str_msg,
+            embeds=entries
+        )
+
+        await pages.start(ctx)
 
     @commands.command(aliases=['places', 'areas'])
     async def locations(self, ctx):

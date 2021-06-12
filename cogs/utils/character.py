@@ -105,8 +105,7 @@ def add_player_item(player: Player, item: Item, amount: int):
         )
 
 
-# TODO: create hostile enemy for the hunt command and others
-def adjust_hostile_by_level(target_level: int, hostile: Hostile, modifier: Modifier = None):
+def create_hostile_enemy(target_level: int, hostile: Hostile, modifier: Modifier = None):
     hostile.level = target_level
     if modifier:
         hostile.name = f"{modifier.prefix} {hostile.name}"

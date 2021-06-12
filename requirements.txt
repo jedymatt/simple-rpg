@@ -1,7 +1,7 @@
 discord.py
 SQLAlchemy
 psycopg2
-mysqlclient
+git+https://github.com/Rapptz/discord-ext-menus
 
 # Dev tools
 python-dotenv

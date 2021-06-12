@@ -18,10 +18,6 @@ class SimpleRPG(commands.Bot):
             case_insensitive=True
         )
 
-        # load cogs
-        # for filename in os.listdir('./cogs'):
-        #     if filename.endswith('.py'):
-        #         self.load_extension(f'cogs.{filename[:-3]}')
         for cog in cogs:
             self.load_extension(f'cogs.{cog}')
 
