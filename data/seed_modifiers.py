@@ -1,7 +1,6 @@
 import json
 
-from models import Attribute
-from models import Modifier
+from models import Attribute, Modifier
 
 
 def load_modifiers():

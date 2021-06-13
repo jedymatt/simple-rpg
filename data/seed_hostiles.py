@@ -1,9 +1,7 @@
 import json
 
 from db.connector import session
-from models import Attribute, ItemLoot, Loot, Raw
-from models import Hostile
-from models import Location
+from models import Attribute, ItemLoot, Loot, Raw, Location, Hostile
 
 
 # seed locations and items before executing this code

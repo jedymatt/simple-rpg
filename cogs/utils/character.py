@@ -1,14 +1,14 @@
 from math import ceil
+from math import floor
+from random import random
 
-from cogs.utils.errors import MaximumExpError
+from cogs.utils.errors import ExpRequirementNotReached
 from models import Attribute
 from models import Character
 from models import Hostile
 from models import Item
 from models import Modifier
-from models import Player
 from models import PlayerItem
-from models.util import character_next_exp, character_scale_attribute, calculate_damage, random_boolean
 
 BASE_EXP = 200
 EXP_GROWTH = 1.2
@@ -19,7 +19,7 @@ MAX_CRITICAL_DAMAGE = 2.00
 MAX_EVADE_CHANCE = 0.45
 MAX_ESCAPE_CHANCE = 1
 
-PLAYER_DATA = {
+PLAYER_INITIAL_DATA = {
     "level": 1,
     "exp": 0,
     "money": 500,
@@ -31,17 +31,6 @@ PLAYER_DATA = {
     },
     "location": "Hometown"
 }
-
-
-def gain_exp(character: Character, exp):
-    total_exp = character.exp + exp
-
-    next_exp = character_next_exp(character.level, BASE_EXP, EXP_GROWTH)
-    while total_exp >= next_exp:
-        raise MaximumExpError('Current Exp reached its maximum to level up')
-        # total_exp -= character_next_exp(character.level, BASE_EXP, EXP_GROWTH)
-        # character.level += 1
-        # character_scale_attribute(character.level, character.attribute)
 
 
 def combine_attributes(attribute: Attribute, other: Attribute):
@@ -71,33 +60,23 @@ def combine_attributes(attribute: Attribute, other: Attribute):
 
     return attribute
 
-    # return Attribute(
-    #     max_hp=attribute.max_hp + other.max_hp,
-    #     strength=attribute.strength + other.strength,
-    #     defense=attribute.defense + other.defense,
-    #     critical_chance=critical_chance,
-    #     critical_damage=critical_damage,
-    #     evade_chance=evade_chance,
-    #     escape_chance=escape_chance,
-    #     growth=attribute.growth + other.growth
-    # )
-
 
 def scale_loot(level, loot):
     loot.exp = ceil(loot.exp * (LOOT_GROWTH ** level))
     loot.money = ceil(loot.money * (LOOT_GROWTH ** level))
 
 
-def add_player_item(player: Player, item: Item, amount: int):
-    # scan if item exists in Player.items
+def add_player_item(player_items: list[PlayerItem], item: Item, amount: int):
+    # get the item that exists in player_items
     player_item = next(
-        (player_item for player_item in player.items if player_item.item.name == item.name),
+        (player_item for player_item in player_items if player_item.item.name == item.name),
         None
     )
+
     if player_item:
         player_item.amount += amount
     else:
-        player.items.append(
+        player_items.append(
             PlayerItem(
                 item=item,
                 amount=amount
@@ -105,17 +84,25 @@ def add_player_item(player: Player, item: Item, amount: int):
         )
 
 
-def create_hostile_enemy(target_level: int, hostile: Hostile, modifier: Modifier = None):
-    hostile.level = target_level
+def adjust_hostile_enemy(new_level: int, hostile: Hostile, modifier: Modifier = None):
+    """
+
+    Adjust hostile enemy's attribute with modifier, if not None, and loot according to its new level
+
+    Args:
+        new_level:
+        hostile:
+        modifier:
+    """
+    hostile.level = new_level
     if modifier:
         hostile.name = f"{modifier.prefix} {hostile.name}"
         combine_attributes(hostile.attribute, modifier.attribute)
         hostile.loot.exp = ceil(hostile.loot.exp * (1 + modifier.bonus_exp))
         hostile.loot.money = ceil(hostile.loot.money * (1 + modifier.bonus_money))
 
-    character_scale_attribute(hostile.level, hostile.attribute)
+    scale_attribute(hostile.level, hostile.attribute)
     scale_loot(hostile.level, hostile.loot)
-    return hostile
 
 
 class BattleSimulator:
@@ -202,7 +189,7 @@ class BattleSimulator:
             opponent_record.lowest_damage_received = damage_dealt[0]
         elif damage_dealt[0] < opponent_record.lowest_damage_received:
             opponent_record.lowest_damage_received = damage_dealt[0]
-
+        opponent_record.total_hits_received += 1
         opponent_record.current_hp = opponent_hp
         return opponent_hp
 
@@ -211,13 +198,77 @@ class BattleRecord:
     def __init__(self, character: Character):
         self.current_hp = character.attribute.max_hp
         self.total_damage_dealt = 0
-        self.average_damage_dealt = 0
         self.highest_damage = 0
         self.highest_damage_is_crit = False
         self.crit_hits = 0
         self.total_damage_received = 0
-        self.average_damage_received = 0
         self.lowest_damage_received = 0
         self.evaded_hits = 0
         self.has_escaped = False
         self.total_hits = 0
+        self.total_hits_received = 0
+
+    def average_damage_received(self):
+        return round(self.total_damage_received / self.total_hits_received, 1)
+
+    def average_damage_dealt(self):
+        return round(self.total_damage_dealt / self.total_hits, 1)
+
+
+def next_exp(current_level):
+    return floor(BASE_EXP * (current_level ** EXP_GROWTH))
+
+
+def total_exp_from_level(current_level):
+    total_exp = 0
+    level = 1
+
+    while level <= current_level:
+        total_exp += next_exp(level)
+        level += 1
+
+    return total_exp
+
+
+def character_level_from_total_exp(total_exp):
+    level = 1
+
+    while total_exp > total_exp_from_level(level):
+        level += 1
+
+    return level
+
+
+def scale_attribute(level, attribute: Attribute):
+    attribute.max_hp = floor(attribute.max_hp * (attribute.growth ** (level - 1)))
+    attribute.strength = floor(attribute.strength * (attribute.growth ** (level - 1)))
+    attribute.defense = floor(attribute.defense * (attribute.growth ** (level - 1)))
+
+
+def random_boolean(chance: float):
+    return random() <= chance
+
+
+def calculate_damage(attacker: Attribute, receiver: Attribute):
+    is_critical_hit = random_boolean(attacker.critical_chance)
+
+    damage_taken = (attacker.strength ** 2) / (attacker.strength + receiver.defense)
+
+    if is_critical_hit:
+        damage_taken *= (1 + attacker.critical_damage)
+
+    return ceil(damage_taken), is_critical_hit
+
+
+def level_up(character: Character):
+    if character.exp < next_exp(character.level):
+        raise ExpRequirementNotReached('Exp not enough to level up')
+
+    level_gained = 0
+    while character.exp >= next_exp(character.level + level_gained):
+        level_gained += 1
+
+    character.level += level_gained
+    character.exp = next_exp(character.level) - character.exp
+
+    return level_gained

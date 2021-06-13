@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from sqlalchemy.sql import func
 
+import models
 import models as model
 from cogs.utils import stripper
 from db.connector import session
@@ -38,11 +39,11 @@ class Economy(commands.Cog):
         if amount <= 0:
             raise ValueError('Amount reached zero or below zero.')
 
-        player: model.Player = session.query(model.Player).filter(model.User.discord_id == ctx.author.id).one()
+        player: models.Player = session.query(models.Player).filter(models.User.discord_id == ctx.author.id).one()
 
         # get item in the shop
-        item_to_buy: model.Item = session.query(model.Item).filter(
-            func.lower(model.Item.name) == name.lower()
+        item_to_buy: models.Item = session.query(models.Item).filter(
+            func.lower(models.Item.name) == name.lower()
         ).one()
 
         # if item exits then proceed
@@ -57,7 +58,7 @@ class Economy(commands.Cog):
 
             # check if queried item to be added is already in the Player.items otherwise create object
             # get item in Player.items
-            player_item: model.PlayerItem = next(
+            player_item: models.PlayerItem = next(
                 (player_item for player_item in player.items if player_item.item == item_to_buy),
                 None
             )
@@ -65,7 +66,7 @@ class Economy(commands.Cog):
                 player_item.amount += amount
             else:  # otherwise does not exists, append object
                 player.items.append(
-                    model.PlayerItem(
+                    models.PlayerItem(
                         item=item_to_buy,
                         amount=amount
                     )
@@ -85,11 +86,11 @@ class Economy(commands.Cog):
             raise ValueError('Amount reached zero or below zero.')
 
         # query Player
-        player: model.Player = session.query(model.Player).filter(model.User.discord_id == ctx.author.id).one()
+        player: models.Player = session.query(models.Player).filter(models.User.discord_id == ctx.author.id).one()
 
         # search for time that is mentioned by the user
         try:
-            item_to_sell: model.PlayerItem = next(
+            item_to_sell: models.PlayerItem = next(
                 player_item for player_item in player.items if str(player_item.item.name).lower() == name.lower()
             )
         except StopIteration:

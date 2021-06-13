@@ -6,8 +6,7 @@ from discord.ext import commands
 from cogs.utils.errors import ItemNotFound
 from cogs.utils.stripper import strip_name_amount
 from db.connector import session
-from models import Attribute
-from models import Equipment, PlayerItem, Player, User, Consumable, Weapon, EquipmentSet
+from models import Attribute, User, Consumable, Equipment, Weapon, Player, PlayerItem, EquipmentSet
 
 
 class Inventory(commands.Cog):

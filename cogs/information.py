@@ -1,13 +1,9 @@
 import discord
 from discord.ext import commands
 
-from cogs.utils.character import BASE_EXP
-from cogs.utils.character import EXP_GROWTH
+from cogs.utils.character import next_exp
 from db.connector import session
-from models import Attribute
-from models import Player
-from models import User
-from models import util
+from models import Attribute, User, Player
 
 
 class Information(commands.Cog):
@@ -36,11 +32,7 @@ class Information(commands.Cog):
             value="Level: {}\nExp: {} / {}\nMoney: {}\nLocation: *{}*".format(
                 player.level,
                 player.exp,
-                util.character_next_exp(
-                    player.level,
-                    BASE_EXP,
-                    EXP_GROWTH
-                ),
+                next_exp(player.level),
                 player.money,
                 player.location.name
             ),

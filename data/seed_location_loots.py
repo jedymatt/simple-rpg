@@ -1,11 +1,7 @@
 import json
 
 from db.connector import session
-from models import Item
-from models import ItemLoot
-from models import Location
-from models import LocationLoot
-from models import Loot
+from models import Item, Location, Loot, ItemLoot, LocationLoot
 
 
 # seed Location and Items first before executing this code

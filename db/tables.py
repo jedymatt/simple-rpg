@@ -1,5 +1,5 @@
 from db.connector import engine
-from models.models import Base
+from models import Base
 
 
 def create():

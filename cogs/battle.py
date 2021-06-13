@@ -2,8 +2,7 @@ import discord
 from discord.ext import commands
 
 from db.connector import session
-from models import Player
-from models import User
+from models import Player, User
 
 
 class Battle(commands.Cog):
