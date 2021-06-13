@@ -35,7 +35,6 @@
     {
         "prefix": "Armoured",
         "attribute": {
-            "max_hp": 2,
             "defense": 12
         },
         "bonus_exp": 0.15,
