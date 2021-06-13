@@ -1,22 +1,28 @@
 import discord
-from discord import Embed, Message
+from discord import Embed
 from discord.ext import menus
-from discord.ext.menus import MenuPages, Menu
+from discord.ext.menus import MenuPages
 
+from cogs.utils import images
 from cogs.utils.character import BattleRecord
 from models import Character
 
 
-class ListPage(menus.ListPageSource):
+class EmbedListPage(menus.ListPageSource):
 
-    def __init__(self, entries, *, per_page=1):
-        super().__init__(entries, per_page=per_page)
+    def __init__(self, global_message: str, embeds, *, per_page=1, footer_counter=True):
+        super().__init__(embeds, per_page=per_page)
+        self.global_message = global_message
+        self.footer_counter = footer_counter
 
-    async def format_page(self, menu: Menu, page):
-        return page
+    async def format_page(self, menu: MenuPages, page):
+        if self.footer_counter:
+            page.set_footer(text=f"Simple RPG | Page {menu.current_page + 1} of {self.get_max_pages()}")
+
+        return {'content': self.global_message, 'embed': page}
 
 
-def character_hunt_record(title, name, character: Character, record: BattleRecord):
+def record_embed(title, name, character: Character, record: BattleRecord, thumbnail_url=None):
     colour = discord.Colour.green() if record.current_hp > 0 else discord.Colour.red()
 
     embed = Embed(
@@ -24,48 +30,44 @@ def character_hunt_record(title, name, character: Character, record: BattleRecor
         colour=colour
     )
 
-    str_value = "HP: {} / {}\nAve. Dmg/hit: {}\nHighest Dmg: {}{}\nCrit Hit(s): {}\nEvaded Hit(s): {}\nLowest Damage " \
-                "Received: {}".format(record.current_hp if record.current_hp > 0 else 0,
-                                      character.attribute.max_hp,
-                                      round(record.total_damage_dealt / record.total_hits,
-                                            1),
-                                      record.highest_damage,
-                                      '[Critical]' if record.highest_damage_is_crit else '',
-                                      record.crit_hits,
-                                      record.evaded_hits,
-                                      record.lowest_damage_received)
+    embed.set_thumbnail(url=thumbnail_url if thumbnail_url else images.DEFAULT)
 
-    embed.add_field(
-        name=f"Lvl.{character.level} {name}",
-        value=str_value
-    )
+    values = [
+        ('Lvl.{} {}', [character.level, name]),
+        ('Hp: {}/{}', [record.current_hp if record.current_hp > 0 else 0, character.attribute.max_hp]),
+        ('Ave. Dmg/Hit: {}', [record.average_damage_dealt()]),
+        ('Highest Dmg: {}{}', [record.highest_damage, '[crit]' if record.highest_damage_is_crit else '']),
+        ('Crit Hits: {}', [record.crit_hits]),
+        ('Evaded Hits: {}', [record.evaded_hits]),
+        ('Low. Dmg Received: {}', [record.lowest_damage_received])
+    ]
+
+    value = '\n'.join(value[0].format(*value[1]) for value in values)
+
+    embed.description = value
 
     return embed
 
 
-class EmbedPages(menus.Menu):
-
-    def __init__(self, msg, embeds):
-        super().__init__()
-        self.timeout = 30
+class Confirm(menus.Menu):
+    def __init__(self, msg):
+        super().__init__(timeout=30.0, delete_message_after=True)
         self.msg = msg
-        self.embeds = embeds
-        self.current_page = 0
-        self.max_pages = len(embeds)
+        self.result = None
 
     async def send_initial_message(self, ctx, channel):
-        return await channel.send(content=self.msg, embed=self.embeds[self.current_page])
+        return await channel.send(self.msg)
 
-    @menus.button("\N{Black Left-Pointing Triangle}")
-    async def on_backward(self, payload):
-        if self.current_page <= 0:
-            pass
-        self.current_page -= 1
-        await self.message.edit(embed=self.embeds[self.current_page])
+    @menus.button('\N{WHITE HEAVY CHECK MARK}')
+    async def do_confirm(self, payload):
+        self.result = True
+        self.stop()
 
-    @menus.button("\N{Black Right-Pointing Triangle}")
-    async def on_forward(self, payload):
-        if self.current_page >= self.max_pages - 1:
-            pass
-        self.current_page += 1
-        await self.message.edit(embed=self.embeds[self.current_page])
+    @menus.button('\N{CROSS MARK}')
+    async def do_deny(self, payload):
+        self.result = False
+        self.stop()
+
+    async def prompt(self, ctx):
+        await self.start(ctx, wait=True)
+        return self.result
