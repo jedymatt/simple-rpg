@@ -1,7 +1,11 @@
 from discord.ext import commands
 
 
-class MaximumExpError(ValueError):
+class MaximumExpError(commands.CommandInvokeError):
+    pass
+
+
+class ExpRequirementNotReached(ValueError):
     pass
 
 
