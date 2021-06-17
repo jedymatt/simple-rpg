@@ -7,7 +7,8 @@ cogs = [
     'register',
     'adventure',
     'information',
-    'inventory'
+    'inventory',
+    'tasks'
 ]
 
 

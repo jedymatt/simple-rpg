@@ -5,6 +5,10 @@ class MaximumExpError(commands.CommandInvokeError):
     pass
 
 
+class LevelNotReached(commands.UserInputError):
+    pass
+
+
 class ExpRequirementNotReached(ValueError):
     pass
 

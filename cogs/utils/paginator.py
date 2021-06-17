@@ -1,3 +1,5 @@
+import datetime
+
 import discord
 from discord import Embed
 from discord.ext import menus
@@ -47,6 +49,30 @@ def record_embed(title, name, character: Character, record: BattleRecord, thumbn
     embed.description = value
 
     return embed
+
+
+class LocationListPage(menus.ListPageSource):
+
+    def __init__(self, entries, *, per_page=4):
+        super().__init__(entries, per_page=per_page)
+
+    async def format_page(self, menu: menus.MenuPages, page):
+        embed = Embed(
+            title="Locations",
+            description="List of locations",
+            colour=discord.Colour.green()
+        )
+
+        for location in page:
+            embed.add_field(
+                name=location.name,
+                value=f"*{location.description}*",
+                inline=False
+            )
+
+        embed.set_footer(text=f"Simple RPG | Page {menu.current_page + 1} of {self.get_max_pages()}")
+
+        return embed
 
 
 class Confirm(menus.Menu):

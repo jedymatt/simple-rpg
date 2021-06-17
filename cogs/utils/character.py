@@ -3,12 +3,11 @@ from math import floor
 from random import random
 
 from cogs.utils.errors import ExpRequirementNotReached
+from cogs.utils.player import PLAYER_INITIAL_DATA
 from models import Attribute
 from models import Character
 from models import Hostile
-from models import Item
 from models import Modifier
-from models import PlayerItem
 
 BASE_EXP = 200
 EXP_GROWTH = 1.2
@@ -18,19 +17,6 @@ MAX_CRITICAL_CHANCE = 0.75
 MAX_CRITICAL_DAMAGE = 2.00
 MAX_EVADE_CHANCE = 0.45
 MAX_ESCAPE_CHANCE = 1
-
-PLAYER_INITIAL_DATA = {
-    "level": 1,
-    "exp": 0,
-    "money": 500,
-    "attribute": {
-        "max_hp": 50,
-        "strength": 15,
-        "defense": 5,
-        "growth": 1.4
-    },
-    "location": "Hometown"
-}
 
 
 def combine_attributes(attribute: Attribute, other: Attribute):
@@ -64,24 +50,6 @@ def combine_attributes(attribute: Attribute, other: Attribute):
 def scale_loot(level, loot):
     loot.exp = ceil(loot.exp * (LOOT_GROWTH ** level))
     loot.money = ceil(loot.money * (LOOT_GROWTH ** level))
-
-
-def add_player_item(player_items: list[PlayerItem], item: Item, amount: int):
-    # get the item that exists in player_items
-    player_item = next(
-        (player_item for player_item in player_items if player_item.item.name == item.name),
-        None
-    )
-
-    if player_item:
-        player_item.amount += amount
-    else:
-        player_items.append(
-            PlayerItem(
-                item=item,
-                amount=amount
-            )
-        )
 
 
 def adjust_hostile_enemy(new_level: int, hostile: Hostile, modifier: Modifier = None):
@@ -209,9 +177,15 @@ class BattleRecord:
         self.total_hits_received = 0
 
     def average_damage_received(self):
+        if self.total_hits_received == 0:
+            return 0
+
         return round(self.total_damage_received / self.total_hits_received, 1)
 
     def average_damage_dealt(self):
+        if self.total_hits == 0:
+            return 0
+
         return round(self.total_damage_dealt / self.total_hits, 1)
 
 
@@ -230,7 +204,7 @@ def total_exp_from_level(current_level):
     return total_exp
 
 
-def character_level_from_total_exp(total_exp):
+def level_from_total_exp(total_exp):
     level = 1
 
     while total_exp > total_exp_from_level(level):
@@ -243,6 +217,27 @@ def scale_attribute(level, attribute: Attribute):
     attribute.max_hp = floor(attribute.max_hp * (attribute.growth ** (level - 1)))
     attribute.strength = floor(attribute.strength * (attribute.growth ** (level - 1)))
     attribute.defense = floor(attribute.defense * (attribute.growth ** (level - 1)))
+
+
+def player_changed_attribute(current_level, new_level):
+    attribute = Attribute()
+
+    attribute.max_hp = floor(
+        PLAYER_INITIAL_DATA['attribute']['max_hp'] * (PLAYER_INITIAL_DATA['attribute']['growth'] ** (new_level - 1)))
+    attribute.max_hp -= floor(PLAYER_INITIAL_DATA['attribute']['max_hp'] * (
+        PLAYER_INITIAL_DATA['attribute']['growth'] ** (current_level - 1)))
+
+    attribute.strength = floor(
+        PLAYER_INITIAL_DATA['attribute']['strength'] * (PLAYER_INITIAL_DATA['attribute']['growth'] ** (new_level - 1)))
+    attribute.strength -= floor(PLAYER_INITIAL_DATA['attribute']['strength'] * (
+        PLAYER_INITIAL_DATA['attribute']['growth'] ** (current_level - 1)))
+
+    attribute.defense = floor(
+        PLAYER_INITIAL_DATA['attribute']['defense'] * (PLAYER_INITIAL_DATA['attribute']['growth'] ** (new_level - 1)))
+    attribute.defense -= floor(PLAYER_INITIAL_DATA['attribute']['defense'] * (
+        PLAYER_INITIAL_DATA['attribute']['growth'] ** (current_level - 1)))
+
+    return attribute
 
 
 def random_boolean(chance: float):

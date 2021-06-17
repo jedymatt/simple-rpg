@@ -2,8 +2,8 @@ import discord
 from discord.ext import commands
 
 from cogs.utils.character import next_exp
+from cogs.utils.query import get_player
 from db.connector import session
-from models import Attribute, User, Player
 
 
 class Information(commands.Cog):
@@ -13,18 +13,16 @@ class Information(commands.Cog):
     @commands.command()
     async def profile(self, ctx: commands.Context):
         """Show profile"""
-        user_id = ctx.author.id
 
-        player = session.query(Player).join(User).filter(User.discord_id == user_id).one()
-        stats: Attribute = player.attribute
+        player = get_player(session, discord_id=ctx.author.id)
 
         # Embedded format
         embed = discord.Embed(
-            title=f"{ctx.author.display_name}'s profile",
+            title="PROFILE",
             colour=discord.Colour.orange(),
         )
 
-        # embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
+        embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
         embed.set_thumbnail(url=ctx.author.avatar_url)
 
         embed.add_field(
@@ -38,14 +36,19 @@ class Information(commands.Cog):
             ),
             inline=False
         )
+
+        stats = player.attribute
+
         embed.add_field(
             name='Stats',
-            value="Max HP: {}\nStrength: {}\nDefense: {}\nCrit Chance: {}%\nCrit Dmg: {}%\nEvade: {}%"
-                  "\nEscape: {}%".format(stats.max_hp, stats.strength, stats.defense,
-                                         stats.critical_chance * 100,
-                                         stats.critical_damage * 100,
-                                         stats.evade_chance * 100,
-                                         stats.escape_chance * 100),
+            value="Max HP: {}\nStrength: {}\nDefense: {}\nCrit Chance: {}%\n"
+                  "Crit Dmg: {}%\nEvade: {}%\nEscape: {}%".format(stats.max_hp,
+                                                                  stats.strength,
+                                                                  stats.defense,
+                                                                  stats.critical_chance * 100,
+                                                                  stats.critical_damage * 100,
+                                                                  stats.evade_chance * 100,
+                                                                  stats.escape_chance * 100),
             inline=False
         )
 

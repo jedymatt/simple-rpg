@@ -12,13 +12,14 @@ def load_location_loots():
             location_loots.append(
                 LocationLoot(
                     location=session.query(Location).filter(Location.name == location_loot['location']).one(),
-                    min=location_loot['min'],
-                    max=location_loot['max'],
+
                     loot=Loot(
                         exp=location_loot['loot']['exp'],
                         money=location_loot['loot']['money'],
                         item_loots=[
                             ItemLoot(
+                                min=item['min'],
+                                max=item['max'],
                                 item=session.query(Item).filter(Item.name == item['item']).one(),
                                 drop_chance=item['drop_chance']
                             ) for item in location_loot['loot']['item_loots']

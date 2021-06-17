@@ -256,7 +256,7 @@ class Loot(Base):
     money = Column(Integer)
 
     # relationships
-    item_loots = relationship('ItemLoot')
+    item_loots = relationship('ItemLoot', back_populates='loot')
 
     def __repr__(self):
         return "<Loot(exp='%s', money='%s')>" % (
@@ -268,6 +268,8 @@ class ItemLoot(Base):
     __tablename__ = 'item_loots'
 
     id = Column(Integer, primary_key=True)
+    min = Column(Integer, default=1)
+    max = Column(Integer, default=1)
     drop_chance = Column(Float)
 
     # Foreign Keys
@@ -276,6 +278,7 @@ class ItemLoot(Base):
 
     # Relationships
     item = relationship('Item', uselist=False)
+    loot = relationship('Loot', back_populates='item_loots', uselist=False)
 
     def __repr__(self):
         return "<ItemLoot(drop_chance='%s')>" % (
@@ -287,8 +290,6 @@ class LocationLoot(Base):
     __tablename__ = 'location_loots'
 
     id = Column(Integer, primary_key=True)
-    min = Column(Integer)
-    max = Column(Integer)
 
     # foreign keys
     location_id = Column(Integer, ForeignKey('locations.id'))

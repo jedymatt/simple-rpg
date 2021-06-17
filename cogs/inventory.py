@@ -9,10 +9,14 @@ from db.connector import session
 from models import Attribute, User, Consumable, Equipment, Weapon, Player, PlayerItem, EquipmentSet
 
 
+# TODO: fix craft, blueprint, add
+#  Plan data in google sheets of the blueprint
+#  Remove inherited Base from Character class in models package
 class Inventory(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        self.
 
     @commands.command()
     async def items(self, ctx):
@@ -262,7 +266,6 @@ class Inventory(commands.Cog):
                 else:
                     player.attribute.__setattr__(chosen, round((item_value * player_attr_value) + player_attr_value))
             else:
-                # TODO: Add conditional statement that filters percentage over integer
                 player.current_hp += player_item.item.attribute.current_hp
                 player.max_hp += player_item.item.attribute.max_hp
                 player.strength += player_item.item.attribute.strength
