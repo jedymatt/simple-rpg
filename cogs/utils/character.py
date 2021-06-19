@@ -1,3 +1,4 @@
+from collections import namedtuple
 from math import ceil
 from math import floor
 from random import random
@@ -17,6 +18,8 @@ MAX_CRITICAL_CHANCE = 0.75
 MAX_CRITICAL_DAMAGE = 2.00
 MAX_EVADE_CHANCE = 0.45
 MAX_ESCAPE_CHANCE = 1
+
+NameAmount = namedtuple("NameAmount", ["name", "amount"])
 
 
 def combine_attributes(attribute: Attribute, other: Attribute):
