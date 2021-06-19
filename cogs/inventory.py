@@ -6,17 +6,15 @@ from discord.ext import commands
 from cogs.utils.errors import ItemNotFound
 from cogs.utils.stripper import strip_name_amount
 from db.connector import session
-from models import Attribute, User, Consumable, Equipment, Weapon, Player, PlayerItem, EquipmentSet
+from models import Attribute, User, Consumable, Equipment, Weapon, Player, PlayerItem, EquipmentSet, Armour
 
 
 # TODO: fix craft, blueprint, add
 #  Plan data in google sheets of the blueprint
-#  Remove inherited Base from Character class in models package
 class Inventory(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.
 
     @commands.command()
     async def items(self, ctx):
@@ -176,7 +174,7 @@ class Inventory(commands.Cog):
                 player.attribute -= player.equipment_set.weapon.attribute
 
             player.equipment_set.weapon = player_item.item
-        elif isinstance(player_item.item, Shield):
+        elif isinstance(player_item.item, Armour):
             if player.equipment_set.shield is not None:
                 player.attribute -= player.equipment_set.shield.attribute
 
