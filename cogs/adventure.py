@@ -12,7 +12,7 @@ from sqlalchemy.sql import func
 
 from cogs.utils import images, errors
 from cogs.utils import player as pl
-from cogs.utils.character import BattleSimulator
+from cogs.utils.character import BattleSimulator, NameAmount
 from cogs.utils.character import adjust_hostile_enemy
 from cogs.utils.character import level_up
 from cogs.utils.character import next_exp
@@ -134,7 +134,7 @@ class Adventure(commands.Cog):
             str_message = 'You defeated the enemy!'
             result_embed.add_field(
                 name='Rewards',
-                value="Exp: +{}\nMoney: +{}".format(
+                value="Exp +{}\nMoney +{}".format(
                     enemy.loot.exp, enemy.loot.money
                 ),
                 inline=False
@@ -144,17 +144,24 @@ class Adventure(commands.Cog):
             player.money += enemy.loot.money
             player.exp += enemy.loot.exp
 
-            has_received_item_reward = False
+            rewards = []
             # randomly generate a chance to receive drop item
             for item_loot in enemy.loot.item_loots:
                 if random_boolean(item_loot.drop_chance):
-                    pl.add_item(player.items, item_loot.item, 1)
-                    has_received_item_reward = True
+                    random_amount = randint(item_loot.min, item_loot.max)
+                    pl.add_item(player.items, item_loot.item, random_amount)
 
-            if has_received_item_reward:
+                    rewards.append(
+                        NameAmount(
+                            name=item_loot.item.name,
+                            amount=random_amount
+                        )
+                    )
+
+            if len(rewards) != 0:
                 result_embed.add_field(
                     name='Items',
-                    value="\n".join(f"{item_loot.item.name} +{1}" for item_loot in enemy.loot.item_loots),
+                    value="\n".join(f"{reward.name} +{reward.amount}" for reward in rewards),
                     inline=False
                 )
 
