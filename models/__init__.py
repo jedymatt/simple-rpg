@@ -6,7 +6,8 @@ from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy import String
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, declarative_mixin, declared_attr
+from sqlalchemy.orm import declared_attr
+from sqlalchemy.orm import relationship
 
 Base = declarative_base()
 
@@ -128,51 +129,34 @@ class Armour(Equipment):
     }
 
 
-# Inherited Base class removed
-@declarative_mixin
-class Character:
-    # __tablename__ = 'characters'
-
-    # @declared_attr
-    # def __tablename__(self):
-    #     return self.__name__.lower()
+# Abstract class
+class Character(Base):
+    __abstract__ = True
 
     id = Column(Integer, primary_key=True)
     level = Column(Integer)
     exp = Column(Integer)
 
-    # type = Column(String(10))
-
     # Foreign keys
     @declared_attr
-    def attribute_id(self):
+    def attribute_id(cls):
         return Column(Integer, ForeignKey('attributes.id'))
 
     @declared_attr
-    def location_id(self):
+    def location_id(cls):
         return Column(Integer, ForeignKey('locations.id'))
 
     # Relationships
     @declared_attr
-    def attribute(self):
-        return relationship('Attribute', foreign_keys=[self.attribute_id], uselist=False)
+    def attribute(cls):
+        return relationship('Attribute', foreign_keys=[cls.attribute_id], uselist=False)
 
     @declared_attr
-    def location(self):
-        return relationship('Location', foreign_keys=[self.location_id], uselist=False)
-
-    # __mapper_args__ = {
-    #     'polymorphic_identity': 'character',
-    #     'polymorphic_on': type
-    # }
-
-    def __repr__(self):
-        return "<Character(level='%s', exp='%s')>" % (
-            self.level, self.exp
-        )
+    def location(cls):
+        return relationship('Location', foreign_keys=[cls.location_id], uselist=False)
 
 
-class Player(Character, Base):
+class Player(Character):
     __tablename__ = 'players'
 
     # id = Column(Integer, ForeignKey('characters.id'), primary_key=True)
@@ -186,10 +170,9 @@ class Player(Character, Base):
     items = relationship('PlayerItem', uselist=True)
     equipment_set = relationship('EquipmentSet', uselist=False)
 
-    # __mapper_args__ = {
-    #     'polymorphic_identity': 'player',
-    #     'polymorphic_load': 'selectin'
-    # }
+    __mapper_args__ = {
+        'polymorphic_identity': 'players'
+    }
 
     def __repr__(self):
         return "<Player(level='%s', exp='%s', money='%s')>" % (
@@ -197,7 +180,7 @@ class Player(Character, Base):
         )
 
 
-class Hostile(Character, Base):
+class Hostile(Character):
     __tablename__ = 'hostiles'
 
     # id = Column(Integer, ForeignKey('characters.id'), primary_key=True)
@@ -209,10 +192,9 @@ class Hostile(Character, Base):
     # Relationships
     loot = relationship('Loot', uselist=False)
 
-    # __mapper_args__ = {
-    #     'polymorphic_identity': 'hostile',
-    #     'polymorphic_load': 'selectin'
-    # }
+    __mapper_args__ = {
+        'polymorphic_identity': 'hostiles'
+    }
 
     def __repr__(self):
         return "<Hostile(name='%s', level='%s', exp='%s'>" % (
