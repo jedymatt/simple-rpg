@@ -163,12 +163,12 @@ class Player(Character):
     money = Column(Integer)
 
     # Foreign keys
-    equipment_set_id = Column(Integer, ForeignKey('equipment_sets.id'))
+    equipment_slot = Column(Integer, ForeignKey('equipment_slots.id'))
 
     # relationships
     user = relationship('User', back_populates='player', uselist=False)
     items = relationship('PlayerItem', uselist=True)
-    equipment_set = relationship('EquipmentSet', uselist=False)
+    equipment_set = relationship('EquipmentSlot', uselist=False)
 
     __mapper_args__ = {
         'polymorphic_identity': 'players'
@@ -218,8 +218,8 @@ class PlayerItem(Base):
         )
 
 
-class EquipmentSet(Base):
-    __tablename__ = 'equipment_sets'
+class EquipmentSlot(Base):
+    __tablename__ = 'equipment_slots'
 
     id = Column(Integer, primary_key=True)
 
@@ -309,7 +309,8 @@ class Blueprint(Base):
 
     # relationships
     item = relationship('Item', uselist=False)
-    blueprint_materials = relationship('BlueprintMaterial', back_populates='blueprint')
+    blueprint_materials = relationship(
+        'BlueprintMaterial', back_populates='blueprint')
 
 
 class BlueprintMaterial(Base):
@@ -323,7 +324,8 @@ class BlueprintMaterial(Base):
 
     # Relationships
     item = relationship('Item', uselist=False)
-    blueprint = relationship('Blueprint', back_populates='blueprint_materials', uselist=False)
+    blueprint = relationship(
+        'Blueprint', back_populates='blueprint_materials', uselist=False)
 
 
 class Shop(Base):
@@ -337,3 +339,34 @@ class Shop(Base):
 
     # relationships
     item = relationship('Item', uselist=False)
+
+
+class Boss(Base):
+    __tablename__ = 'bosses'
+
+    id = Column(Integer, primary_key=True)
+    level_requirement = Column(Integer)
+    type = Column(String(10))
+
+    hostile_id = Column(Integer, ForeignKey('hostiles.id'))
+
+    hostile = relationship('Hostile')
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'boss',
+        'polymorphic_on': type
+    }
+
+
+class EliteBoss(Boss):
+    __mapper_args__ = {
+        'polymorphic_identity': 'elite',
+        'polymorphic_load': 'selectin'
+    }
+
+
+class WorldBoss(Boss):
+    __mapper_args__ = {
+        'polymorphic_identity': 'world',
+        'polymorphic_load': 'selectin'
+    }

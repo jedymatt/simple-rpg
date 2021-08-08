@@ -1,0 +1,117 @@
+[
+    {
+        "model": "models.Hostile",
+        "data": {
+            "name": "Spider",
+            "level": 1,
+            "exp": 0,
+            "attribute": {
+                "model": "models.Attribute",
+                "data": {
+                    "max_hp": 30,
+                    "strength": 10,
+                    "defense": 5,
+                    "critical_chance": 0.15,
+                    "critical_damage": 0.2,
+                    "growth": 1.4
+                }
+            },
+            "loot": {
+                "model": "models.Loot",
+                "data": {
+                    "exp": 10,
+                    "money": 3,
+                    "item_loots": [
+                        {
+                            "model": "models.ItemLoot",
+                            "data": {
+                                "drop_chance": 0.09,
+                                "item": {
+                                    "model": "models.Item",
+                                    "filter": {
+                                        "name": "Spider Web"
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            "location": {
+                "model": "models.Location",
+                "filter": {
+                    "name": "Hometown"
+                }
+            }
+        }
+    },
+    {
+        "name": "Slime",
+        "level": 1,
+        "exp": 0,
+        "attribute": {
+            "max_hp": 55,
+            "strength": 5,
+            "defense": 5,
+            "growth": 1.4
+        },
+        "loot": {
+            "exp": 13,
+            "money": 3,
+            "item_loots": [
+                {
+                    "drop_chance": 0.09,
+                    "item": "Slime Secrete"
+                }
+            ]
+        },
+        "location": "Northern Plain"
+    },
+    {
+        "name": "Wolf",
+        "level": 1,
+        "exp": 0,
+        "attribute": {
+            "max_hp": 35,
+            "strength": 13,
+            "defense": 3,
+            "critical_chance": 0.2,
+            "critical_damage": 0.4,
+            "evade_chance": 0.09,
+            "growth": 1.4
+        },
+        "loot": {
+            "exp": 15,
+            "money": 4,
+            "item_loots": [
+                {
+                    "drop_chance": 0.09,
+                    "item": "Wolf Fang"
+                }
+            ]
+        },
+        "location": "Northern Plain"
+    },
+    {
+        "name": "Bear",
+        "level": 1,
+        "exp": 0,
+        "attribute": {
+            "max_hp": 65,
+            "strength": 10,
+            "defense": 15,
+            "growth": 1.4
+        },
+        "loot": {
+            "exp": 16,
+            "money": 5,
+            "item_loots": [
+                {
+                    "drop_chance": 0.09,
+                    "item": "Bear Skin"
+                }
+            ]
+        },
+        "location": "Rocky Mountain"
+    }
+]

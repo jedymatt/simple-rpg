@@ -1,12 +1,20 @@
 import random
 
 import discord
+from db.connector import session
 from discord.ext import commands
 
 from cogs.utils.errors import ItemNotFound
 from cogs.utils.stripper import strip_name_amount
-from db.connector import session
-from models import Attribute, User, Consumable, Equipment, Weapon, Player, PlayerItem, EquipmentSet, Armour
+from models import Armour
+from models import Attribute
+from models import Consumable
+from models import Equipment
+from models import EquipmentSlot
+from models import Player
+from models import PlayerItem
+from models import User
+from models import Weapon
 
 
 # TODO: fix craft, blueprint, add
@@ -167,7 +175,7 @@ class Inventory(commands.Cog):
             raise ValueError('Amount not enough')
 
         if not player.equipment_set:
-            player.equipment_set = EquipmentSet()
+            player.equipment_set = EquipmentSlot()
 
         if isinstance(player_item.item, Weapon):
             if player.equipment_set.weapon is not None:

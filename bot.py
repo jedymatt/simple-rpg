@@ -1,7 +1,7 @@
 from discord.ext import commands
 
 from config import BOT_TOKEN
-from db.connector import engine
+from db import engine
 
 cogs = [
     'register',

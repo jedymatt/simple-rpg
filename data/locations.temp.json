@@ -1,0 +1,45 @@
+{
+    "model": "models.Location",
+    "data": [
+        {
+            "name": "Hometown",
+            "description": "The town where you lives.",
+            "level_requirement": 1
+        },
+        {
+            "name": "Northern Plain",
+            "description": null,
+            "level_requirement": 5
+        },
+        {
+            "name": "Dry Lake",
+            "description": null,
+            "level_requirement": 12
+        },
+        {
+            "name": "Rocky Mountain",
+            "description": null,
+            "level_requirement": 21
+        },
+        {
+            "name": "Dark Forest",
+            "description": null,
+            "level_requirement": 32
+        },
+        {
+            "name": "Seaside Shore",
+            "description": null,
+            "level_requirement": 45
+        },
+        {
+            "name": "Tiny Island",
+            "description": null,
+            "level_requirement": 60
+        },
+        {
+            "name": "Forbidden Swamp",
+            "description": null,
+            "level_requirement": 75
+        }
+    ]
+}

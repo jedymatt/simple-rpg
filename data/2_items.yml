@@ -1,0 +1,37 @@
+- model: models.Raw
+  data: 
+    - name: Spider Web
+      description: ~
+      is_tradable: false
+    
+    - name: Secrete Slime
+      description: ~
+      is_tradable: false
+    
+    - name: Wolf Fang
+      description: ~
+      is_tradable: false
+    
+    - name: Bear Skin
+      description: ~
+      is_tradable: false
+    
+    - name: Wood
+      description: ~
+      is_tradable: false
+    
+    - name: Stone
+      description: ~
+      is_tradable: false
+    
+    - name: Iron
+      description: ~
+      is_tradable: false
+    
+    - name: Gold
+      description: ~
+      is_tradable: false
+
+- model: models.Consumable
+  data:
+    

@@ -2,9 +2,8 @@ discord.py
 SQLAlchemy
 psycopg2
 git+https://github.com/Rapptz/discord-ext-menus
-#git+https://github.com/jedymatt/SimpleRPGModels
-
 
 # Dev tools
-python-dotenv
-sqlalchemy-seeder
+python-dotenv # local env loader
+sqlalchemyseed[yaml] # SQLAlchemy seeder
+mysqlclient # mysql driver, Note: SQLAlchemy db url prefix=mysql+mysqldb

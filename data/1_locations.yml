@@ -1,0 +1,26 @@
+model: models.Location
+data:
+    - name: Hometown
+      description: The town where you live.
+      level_requirement: 1
+
+    - name: Northern Plain
+      level_requirement: 5
+
+    - name: Dry Lake
+      level_requirement: 12
+
+    - name: Rocky Mountain
+      level_requirement: 21
+
+    - name: Dark Forest
+      level_requirement: 32
+
+    - name: Seaside Shore
+      level_requirement: 45
+
+    - name: Tiny Island
+      level_requirement: 60
+
+    - name: Forbidden Swamp
+      level_requirement: 75
