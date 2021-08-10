@@ -32,6 +32,6 @@
       description: ~
       is_tradable: false
 
-- model: models.Consumable
-  data:
+# - model: models.Consumable
+#   data: {}
     

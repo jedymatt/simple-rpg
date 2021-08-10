@@ -1,33 +1,27 @@
 import os
 
-import yaml
-from sqlalchemyseed import HybridSeeder
+from sqlalchemyseed import HybridSeeder, load_entities_from_yaml, validator
 
 from db import session
 
 
 seeder = HybridSeeder(session=session)
 
-
-def seed(filepath: str):
-    with open(filepath, 'r') as f:
-        data = yaml.load(f.read(), Loader=yaml.SafeLoader)
-
-    seeder.seed(data)
-
-
 path_dir = 'data'
-filetype = 'yaml'
+filetypes = ['yaml', 'yml']
 
-filepaths = []
-for fname in os.listdir(path_dir):
-    if fname.endswith('.yaml'):
-        filepaths.append(os.path.join(path_dir, fname))
-
+filepaths = [os.path.join(path_dir, fname) for fname in os.listdir(
+    path_dir) if not fname.startswith('_') and fname.rsplit('.')[1] in filetypes]
 
 filepaths.sort()
-
+# print(filepaths)
 for filepath in filepaths:
-    seed(filepath)
+    print('-' * 75)
+    print(f'{filepath}:', end='')
+    entities = load_entities_from_yaml(filepath)
+    validator.SchemaValidator.validate(entities)
+
+    print('PASSED')
+    # print(filepath, ':', seeder.instances)
 
 # session.commit()

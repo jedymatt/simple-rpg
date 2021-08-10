@@ -21,7 +21,7 @@ from cogs.utils.character import random_boolean
 from cogs.utils.paginator import EmbedListPage, LocationListPage
 from cogs.utils.paginator import record_embed
 from cogs.utils.query import get_player, get_hostile, get_modifier
-from db.connector import session
+from db import session
 from models import Hostile, Loot, LocationLoot, ItemLoot
 from models import Location
 from models import Modifier

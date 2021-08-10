@@ -1,0 +1,9 @@
+model: models.Modifier
+data:
+    - prefix: Angry
+      \!attribute:
+          model: models.Attribute
+          data:
+              strength: 12
+      bonus_exp: 0.12,
+      bonus_money: 0.14

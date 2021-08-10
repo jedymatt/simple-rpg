@@ -1,7 +1,7 @@
 import random
 
 import discord
-from db.connector import session
+from db import session
 from discord.ext import commands
 
 from cogs.utils.errors import ItemNotFound

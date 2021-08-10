@@ -1,6 +1,6 @@
 from discord.ext import commands
 
-from db.connector import session
+from db import session
 from models import Attribute, User, Location, Player
 from cogs.utils.player import PLAYER_INITIAL_DATA
 

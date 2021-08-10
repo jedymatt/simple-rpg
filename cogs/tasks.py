@@ -2,7 +2,7 @@ import asyncio
 
 from discord.ext import tasks, commands
 
-from db.connector import session
+from db import session
 from models import Player, User
 
 
@@ -33,8 +33,10 @@ class BackgroundTask(commands.Cog):
 
     @commands.command()
     async def delete(self, ctx):
-        player = session.query(Player).join(User, User.player_id == Player.id).where(
-            User.discord_id == ctx.author.id).one()
+        player = (
+            session.query(Player).join(User, User.player_id == Player.id)
+                .where(User.discord_id == ctx.author.id).one()
+        )
         session.delete(player)
 
 
