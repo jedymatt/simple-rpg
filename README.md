@@ -1,3 +1,3 @@
-# Simple RPG
+# Simple RPG (In Progress)
 
 RPG game bot in discord.
