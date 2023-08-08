@@ -1,6 +1,7 @@
 import './lib/setup';
 import { LogLevel, SapphireClient } from '@sapphire/framework';
 import { GatewayIntentBits } from 'discord.js';
+import connect from './lib/database';
 
 const client = new SapphireClient({
 	defaultPrefix: '!',
@@ -14,6 +15,9 @@ const client = new SapphireClient({
 
 const main = async () => {
 	try {
+		client.logger.info('Connecting to database');
+		await connect();
+		client.logger.info('Connected to database');
 		client.logger.info('Logging in');
 		await client.login();
 		client.logger.info('logged in');
