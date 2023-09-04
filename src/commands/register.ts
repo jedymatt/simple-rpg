@@ -1,6 +1,7 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import { Command } from '@sapphire/framework';
 import { Character } from '../models/character';
+import { Location } from '../models';
 
 @ApplyOptions<Command.Options>({
 	description: 'Register a character',
@@ -28,7 +29,8 @@ export class UserCommand extends Command {
 				strength: 15,
 				defense: 5,
 			},
-			location: 'hometown',
+			location: await Location.findOne({ name: 'Hometown' }),
+			money: 0,
 		});
 
 
