@@ -5,7 +5,8 @@ import { Location } from '../models/location';
 import { Monster } from '../models/monster';
 
 @ApplyOptions<Command.Options>({
-	description: 'Fight a monster in your current location'
+	description: 'Fight a monster in your current location',
+	preconditions: ['registeredOnly']
 })
 export class UserCommand extends Command {
 	public override registerApplicationCommands(registry: Command.Registry) {
@@ -14,10 +15,10 @@ export class UserCommand extends Command {
 
 	public override async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
 		const character = await Character.findOne({ discordId: interaction.user.id });
-		const currentLocation = await Location.findOne({ slug: character!.location });
+		const currentLocation = await Location.findById(character!.location);
 
 		// find monsters in current location
-		const monstersInLocation = await Monster.find({ slug: { $in: currentLocation!.monsters } });
+		const monstersInLocation = await Monster.find({ _id: { $in: currentLocation!.monsters } });
 
 		// pick a random monster
 		const monsterToFight = monstersInLocation[Math.floor(Math.random() * monstersInLocation.length)];
@@ -38,7 +39,7 @@ export class UserCommand extends Command {
 		// if the player died, return a message saying so
 		if (characterHp <= 0) {
 			// include the remaining hp of the monster in the message
-			return interaction.reply({ content: `You died! Remaining hp of ${monsterToFight.name} is ${monsterHp}/${monsterToFight.attributes.hp}` });
+			return interaction.reply({ content: `You died! Remaining hp of ${monsterToFight.name} is ${monsterHp}/${monsterToFight.attributes.hp}.` });
 		}
 
 		// if the monster died, return a message saying so
@@ -47,7 +48,7 @@ export class UserCommand extends Command {
 			await character!.updateOne({ exp: character!.exp + 20 });
 
 			return interaction.reply({
-				content: `You killed the ${monsterToFight.name}! Your remaining hp is ${characterHp}/${character!.attributes.hp}`
+				content: `You killed the ${monsterToFight.name}! Your remaining hp is ${characterHp}/${character!.attributes.hp}. Gain 20 exp.`
 			});
 		}
 
