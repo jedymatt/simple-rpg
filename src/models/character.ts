@@ -9,19 +9,21 @@ interface ICharacter {
 		strength: number;
 		defense: number;
 	};
-	location: String;
+	location: mongoose.Types.ObjectId;
+	money: number;
 }
 
 const characterSchema = new mongoose.Schema<ICharacter>({
 	discordId: { type: String, required: true },
 	level: { type: Number, required: true },
-	exp: { type: Number, required: true},
+	exp: { type: Number, required: true },
 	attributes: {
-		hp: {type: Number, required: true},
-		strength: {type: Number, required: true},
-		defense: {type: Number, required: true},
+		hp: { type: Number, required: true },
+		strength: { type: Number, required: true },
+		defense: { type: Number, required: true }
 	},
-	location: { type: String, required: true }
+	location: { type: mongoose.Schema.Types.ObjectId, ref: 'Location', required: true },
+	money: { type: Number, required: true }
 });
 
 const Character = mongoose.model<ICharacter>('Character', characterSchema);
