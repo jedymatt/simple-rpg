@@ -1,5 +1,4 @@
 import { ApplyOptions } from '@sapphire/decorators';
-import { Args } from '@sapphire/framework';
 import { Subcommand } from '@sapphire/plugin-subcommands';
 import { Character, Location } from '../models';
 
@@ -33,8 +32,31 @@ export class UserCommand extends Subcommand {
 		);
 	}
 
-	public async chatInputMove(interaction: Subcommand.ChatInputCommandInteraction, _: Args) {
-		await interaction.reply('Hello');
+	public async chatInputMove(interaction: Subcommand.ChatInputCommandInteraction) {
+		const destinationInput = interaction.options.getString('location');
+
+		const destinationLocation = await Location.findOne({
+			name: { $regex: new RegExp(`^${destinationInput}$`, 'i') }
+		});
+
+		if (!destinationLocation) {
+			return await interaction.reply(`Location ${destinationInput} not found`);
+		}
+
+		const character = await Character.findOne({ discordId: interaction.user.id });
+
+		if (character!.location.equals(destinationLocation._id)) {
+			return await interaction.reply(`You are already in ${destinationLocation.name}`);
+		}
+
+
+		if (destinationLocation.levelRequirement > character!.level) {
+			return await interaction.reply(`You need to be level ${destinationLocation.levelRequirement} to go there`);
+		}
+
+		await character!.updateOne({ location: destinationLocation });
+
+		return await interaction.reply(`You moved to ${destinationLocation.name}`);
 	}
 
 	public async chatInputCurrent(interaction: Subcommand.ChatInputCommandInteraction) {
